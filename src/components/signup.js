@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { auth } from '../firebase'; // Import Firebase auth
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
+import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
 function Signup() {
@@ -14,7 +14,16 @@ function Signup() {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      navigate('/'); // Navigate to home after successful signup
+      navigate('/'); // Redirect to the homepage after successful signup
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate('/'); // Redirect to the homepage
     } catch (err) {
       setError(err.message);
     }
@@ -48,6 +57,7 @@ function Signup() {
         </div>
         <button type="submit">Sign Up</button>
       </form>
+      <button onClick={handleGoogleSignup}>Sign up with Google</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <p>
         Already have an account? <a href="/login">Login</a>
